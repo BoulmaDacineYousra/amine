@@ -9,32 +9,26 @@ var bp = bodyParser.urlencoded({extended:false})
 
 
 
-var db = mongoose.connect("mongodb://localhost:27017/base2") ; 
+var db = mongoose.connect("mongodb://localhost:27017/andrew") ; 
 
 //schema cours
 var SchemaCours = mongoose.Schema({
 
      titre : String,
      description : String ,
-     listeEnseignants: [{
-        type : mongoose.Schema.Types.ObjectId ; 
-        ref : "ens"
-    }] 
+     listeEnseignants: [String] 
 }) ; 
 var cours = mongoose.model("cours" , SchemaCours) ;
 
 
 //schema enseignant 
-var SchemaEns = mongoose.Schema({
+var SchemaEnseignant = mongoose.Schema({
 
-    nom : String,
+    
     prenom : String ,
-    listeCours: [{
-        type : mongoose.Schema.Types.ObjectId ; 
-        ref : "cours"
-    }] 
+    listeCours: [String] 
 }) ; 
-var ens = mongoose.model("ens" , SchemaEns) ;
+var enseignant = mongoose.model("enseignant" , SchemaEnseignant) ;
 
 
 
@@ -49,15 +43,17 @@ app.post("/ajouterCours" , bp , function(req , res){
     }) ; 
 }) ; 
 
-app.post("/ajouterEns" , bp , function(req , res){
+app.post("/ajouterEnseignant" , bp , function(req , res){
 
-    var nom = req.body.nom ; 
-    var prenom = req.body.presnom ; 
+    
+    var prenom = req.body.prenom ; 
     var listeCours = req.body.listeCours ; 
-    var cens = new ens({nom: nom , prenom:prenom ,  listeCours :  listeCours }) ; 
-    cour.save(function(){
+    var ens = new enseignant({ prenom:prenom ,  listeCours :  listeCours }) ; 
+    ens.save(function(){
+
         
-        res.redirect("/ens")
+        
+        res.redirect("/enseignant")
     }) ; 
 }) ; 
 
@@ -68,29 +64,27 @@ app.get("/cours" , function(req,res){
    }) ; 
 }) ; 
 
-app.get("/ens" , function(req,res){
-    ens.find().then( function(ens){
-    res.json(ens)
+app.get("/enseignant" , function(req,res){
+    enseignant.find().then( function(enseignant){
+    res.json(enseignant)
    }) ; 
 }) ; 
 
 
 app.post("/update" , bp , function(req , res){
     
-    var filtre= req.body.filtre ; 
-    var description = req.body.description ;
+    var id= req.body.id ; 
+    var titre = req.body.titre ;
 
-    console.log(filtre)
-    console.log(description)
      
-    cours.updateMany( {titre : filtre} , {$set:{ description : description}})
+    cours.updateMany( {_id: id} , {$set:{ titre : titre}})
     .then (function (){  res.redirect("/cours") }) ;
 }) ; 
 
-app.post("/remove/:titre" , bp , function(req , res){
-    var titre= req.params.titre ; 
-    console.log (titre)
-    cours.deleteMany({ titre : titre})
+app.post("/remove/:id" , bp , function(req , res){
+    var id= req.params.id ; 
+    
+    cours.deleteMany({ _id : id })
     .then (function (){
         res.redirect("/cours");
     });
