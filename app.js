@@ -37,6 +37,7 @@ app.post("/ajouterCours" , bp , function(req , res){
     var titre = req.body.titre ; 
     var description = req.body.description ; 
     var listeEnseignants = req.body.listeEnseignants ; 
+    
     var cour = new cours({titre : titre , description :description ,  listeEnseignants :  listeEnseignants }) ; 
     cour.save(function(){
         res.redirect("/cours")
